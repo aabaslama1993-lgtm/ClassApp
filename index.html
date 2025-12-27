@@ -1,0 +1,3029 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassApp - Votre plateforme éducative</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2xhc3NBcHAiLCJzaG9ydF9uYW1lIjoiQ2xhc3NBcHAiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMTcyYSIsInRoZW1lX2NvbG9yIjoiIzM3MzBlZCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnJTIweG1sbnMlM0QnaHR0cCUzQSUyRiUyRnd3dy53My5vcmclMkYyMDAwJTJGc3ZnJyUyMHdpZHRoJTNEJzE5MiclMjBoZWlnaHQlM0QnMTkyJyUzRSUzQ3JlY3QlMjB3aWR0aCUzRCcxOTInJTIwaGVpZ2h0JTNEJzE5MiclMjBmaWxsJTNEJyUyMzM3MzBlZCclMkYlM0UlM0N0ZXh0JTIweCUzRCc1MCUyNSclMjB5JTNEJzUwJTI1JyUyMGZvbnQtc2l6ZSUzRCc4MCclMjBmaWxsJTNEJyUyM2ZmZmZmZiclMjB0ZXh0LWFuY2hvciUzRCdtaWRkbGUnJTIwZG9taW5hbnQtYmFzZWxpbmUlM0QnbWlkZGxlJyUzRUMlM0MlMkZ0ZXh0JTNFJTNDJTJGc3ZnJTNFIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjE5MngxOTIifV19">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #3730ed;
+            --accent-hover: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .points-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .points-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-primary);
+        }
+
+        .badge-count {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 100px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem;
+            z-index: 1000;
+            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.3);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .bottom-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            min-width: 60px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-primary);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeInUp 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(55, 48, 237, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .item-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+            border-color: var(--accent);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: var(--bg-primary);
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .item-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--warning);
+            margin-bottom: 1rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .auth-container {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .message-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .message-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .message-preview {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .online-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+            border: 2px solid var(--bg-card);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(55, 48, 237, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chest-container {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .chest-icon {
+            font-size: 8rem;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.3s;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .chest-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .streak-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s;
+        }
+
+        .streak-card {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            padding: 3rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.5);
+            animation: bounceIn 0.6s;
+        }
+
+        .streak-number {
+            font-size: 5rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .streak-text {
+            font-size: 1.5rem;
+            color: white;
+            margin-top: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .badge-item {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .badge-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .badge-item.earned {
+            border-color: var(--success);
+            opacity: 1;
+        }
+
+        .badge-item.locked {
+            opacity: 0.4;
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            color: var(--success);
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quick-action-card {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 16px rgba(55, 48, 237, 0.2);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            z-index: 9999;
+            animation: slideInRight 0.3s;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .points-badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .auth-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loading">
+        <div class="spinner"></div>
+        <p>Chargement de ClassApp...</p>
+    </div>
+
+    <div id="app"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://vlqznzrcmvfyrojhyecl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZscXpuenJjbXZmeXJvamh5ZWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3MTMwNTcsImV4cCI6MjA4MTI4OTA1N30.Ol2nRBiv58TPVXVtinfXrdMlrlbErHLPTO3h90QgnEo';
+
+        let supabaseClient;
+        let app;
+
+        async function initApp() {
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                
+                const { error } = await supabaseClient.from('users').select('count').limit(1);
+                if (error) throw error;
+
+                app = new ClassApp();
+                await app.init();
+                
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="text-align:center;max-width:500px;">
+                        <div style="font-size:4rem;margin-bottom:1rem;">⚠️</div>
+                        <h2 style="color:var(--danger);margin-bottom:1rem;">Erreur de connexion</h2>
+                        <p style="color:var(--text-secondary);margin-bottom:2rem;">${error.message}</p>
+                        <button class="btn btn-primary" onclick="location.reload()">Réessayer</button>
+                    </div>
+                `;
+            }
+        }
+
+        class ClassApp {
+            constructor() {
+                this.currentUser = null;
+                this.currentSection = 'accueil';
+                this.notifications = [];
+            }
+
+            async init() {
+                await this.checkAuth();
+                if (this.currentUser) {
+                    await this.loadUserData();
+                    this.renderApp();
+                    await this.checkStreak();
+                } else {
+                    this.renderAuth();
+                }
+            }
+
+            async checkAuth() {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    try {
+                        const { data } = await supabaseClient
+                            .from('users')
+                            .select('*')
+                            .eq('id', userId)
+                            .single();
+                        if (data) this.currentUser = data;
+                    } catch (error) {
+                        localStorage.removeItem('userId');
+                    }
+                }
+            }
+
+            async loadUserData() {
+                const { data: notifications } = await supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', this.currentUser.id)
+                    .eq('read', false);
+                this.notifications = notifications || [];
+
+                await supabaseClient
+                    .from('users')
+                    .update({ 
+                        is_online: true,
+                        last_login: new Date().toISOString()
+                    })
+                    .eq('id', this.currentUser.id);
+            }
+
+            async checkStreak() {
+                const lastLogin = new Date(this.currentUser.last_login);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                lastLogin.setHours(0, 0, 0, 0);
+                
+                const diffDays = Math.floor((today - lastLogin) / (1000 * 60 * 60 * 24));
+                
+                let newStreak = this.currentUser.streak_days || 0;
+                if (diffDays === 1) {
+                    newStreak += 1;
+                    this.showStreakAnimation(newStreak);
+                } else if (diffDays > 1) {
+                    newStreak = 1;
+                } else if (diffDays === 0) {
+                    return;
+                }
+
+                await supabaseClient
+                    .from('users')
+                    .update({ streak_days: newStreak })
+                    .eq('id', this.currentUser.id);
+                
+                this.currentUser.streak_days = newStreak;
+            }
+
+            showStreakAnimation(days) {
+                const overlay = document.createElement('div');
+                overlay.className = 'streak-overlay';
+                overlay.innerHTML = `
+                    <div class="streak-card">
+                        <div class="streak-number">🔥 ${days}</div>
+                        <div class="streak-text">Jours d'affilée !</div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                setTimeout(() => overlay.remove(), 3000);
+            }
+
+            renderAuth() {
+                document.getElementById('app').innerHTML = `
+                    <div class="auth-container">
+                        <div class="auth-card">
+                            <h1 class="auth-title">ClassApp</h1>
+                            <div id="auth-forms"></div>
+                        </div>
+                    </div>
+                `;
+                this.renderLoginForm();
+            }
+
+            renderLoginForm() {
+                document.getElementById('auth-forms').innerHTML = `
+                    <h2 style="margin-bottom:1.5rem;text-align:center;">Connexion</h2>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="login-email" placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-input" id="login-password" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-bottom:1rem;" onclick="app.login()">Se connecter</button>
+                    <button class="btn btn-primary" style="width:100%;background:var(--bg-primary);" onclick="app.renderRegisterForm()">Créer un compte</button>
+                `;
+            }
+
+            renderRegisterForm() {
+                document.getElementById('auth-forms').innerHTML = `
+                    <h2 style="margin-bottom:1.5rem;text-align:center;">Inscription</h2>
+                    <div class="form-group">
+                        <label class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-input" id="register-username" placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="register-email" placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <input type="password" class="form-input" id="register-password" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;margin-bottom:1rem;" onclick="app.register()">S'inscrire</button>
+                    <button class="btn btn-primary" style="width:100%;background:var(--bg-primary);" onclick="app.renderLoginForm()">Déjà un compte</button>
+                `;
+            }
+
+            async login() {
+                try {
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+
+                    if (!email || !password) {
+                        this.showToast('Veuillez remplir tous les champs', 'danger');
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password)
+                        .single();
+
+                    if (error || !data) {
+                        this.showToast('Email ou mot de passe incorrect', 'danger');
+                        return;
+                    }
+
+                    this.currentUser = data;
+                    localStorage.setItem('userId', data.id);
+                    await this.loadUserData();
+                    this.renderApp();
+                    await this.checkStreak();
+                } catch (error) {
+                    this.showToast('Erreur: ' + error.message, 'danger');
+                }
+            }
+
+            async register() {
+                try {
+                    const username = document.getElementById('register-username').value;
+                    const email = document.getElementById('register-email').value;
+                    const password = document.getElementById('register-password').value;
+
+                    if (!username || !email || !password) {
+                        this.showToast('Veuillez remplir tous les champs', 'danger');
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .insert({
+                            username,
+                            email,
+                            password,
+                            role: 'member',
+                            points_s: 100,
+                            streak_days: 0,
+                            is_online: false
+                        })
+                        .select()
+                        .single();
+
+                    if (error) {
+                        this.showToast('Erreur: ' + error.message, 'danger');
+                        return;
+                    }
+
+                    this.showToast('Compte créé avec succès !', 'success');
+                    this.renderLoginForm();
+                } catch (error) {
+                    this.showToast('Erreur: ' + error.message, 'danger');
+                }
+            }
+
+            logout() {
+                supabaseClient
+                    .from('users')
+                    .update({ is_online: false })
+                    .eq('id', this.currentUser.id);
+                localStorage.removeItem('userId');
+                location.reload();
+            }
+
+            renderApp() {
+                const isOwner = this.currentUser.role === 'owner';
+                
+                document.getElementById('app').innerHTML = `
+                    <header class="header">
+                        <div class="header-left">
+                            <div class="logo">ClassApp</div>
+                            <div class="points-badge">
+                                <span>💎</span>
+                                <span id="points-value">${this.currentUser.points_s || 0}</span>
+                                <span>Points S</span>
+                            </div>
+                        </div>
+                        <div class="header-actions">
+                            <button class="icon-btn" onclick="app.showNotifications()">
+                                🔔
+                                ${this.notifications.length > 0 ? `<span class="badge-count">${this.notifications.length}</span>` : ''}
+                            </button>
+                        </div>
+                    </header>
+
+                    <main class="main-content">
+                        <div id="content"></div>
+                    </main>
+
+                    <nav class="bottom-nav">
+                        <div class="nav-item active" data-section="accueil">
+                            <div class="nav-icon">🏠</div>
+                            <div>Accueil</div>
+                        </div>
+                        <div class="nav-item" data-section="recherche">
+                            <div class="nav-icon">🔍</div>
+                            <div>Recherche</div>
+                        </div>
+                        <div class="nav-item" data-section="messages">
+                            <div class="nav-icon">💬</div>
+                            <div>Messages</div>
+                        </div>
+                        <div class="nav-item" data-section="posts">
+                            <div class="nav-icon">📝</div>
+                            <div>Posts</div>
+                        </div>
+                        <div class="nav-item" data-section="abonnements">
+                            <div class="nav-icon">⭐</div>
+                            <div>Abonnements</div>
+                        </div>
+                        <div class="nav-item" data-section="evenements">
+                            <div class="nav-icon">🎉</div>
+                            <div>Événements</div>
+                        </div>
+                        <div class="nav-item" data-section="devoirs">
+                            <div class="nav-icon">📚</div>
+                            <div>Devoirs</div>
+                        </div>
+                        <div class="nav-item" data-section="cours">
+                            <div class="nav-icon">📖</div>
+                            <div>Cours</div>
+                        </div>
+                        <div class="nav-item" data-section="membres">
+                            <div class="nav-icon">👥</div>
+                            <div>Membres</div>
+                        </div>
+                        <div class="nav-item" data-section="quiz">
+                            <div class="nav-icon">❓</div>
+                            <div>Quiz</div>
+                        </div>
+                        <div class="nav-item" data-section="programme">
+                            <div class="nav-icon">🎯</div>
+                            <div>Programme</div>
+                        </div>
+                        <div class="nav-item" data-section="boutique">
+                            <div class="nav-icon">🛒</div>
+                            <div>Boutique</div>
+                        </div>
+                        <div class="nav-item" data-section="badges">
+                            <div class="nav-icon">🏆</div>
+                            <div>Badges</div>
+                        </div>
+                        <div class="nav-item" data-section="parametres">
+                            <div class="nav-icon">⚙️</div>
+                            <div>Paramètres</div>
+                        </div>
+                    </nav>
+
+                    <div id="modal-container"></div>
+                `;
+
+                this.setupNavigation();
+                this.showSection('accueil');
+            }
+
+            setupNavigation() {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const section = item.dataset.section;
+                        this.showSection(section);
+                        
+                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                    });
+                });
+            }
+
+            async showSection(section) {
+                this.currentSection = section;
+                const content = document.getElementById('content');
+                content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Chargement...</p></div>';
+
+                try {
+                    switch(section) {
+                        case 'accueil': await this.renderAccueil(); break;
+                        case 'recherche': await this.renderRecherche(); break;
+                        case 'messages': await this.renderMessages(); break;
+                        case 'posts': await this.renderPosts(); break;
+                        case 'abonnements': await this.renderAbonnements(); break;
+                        case 'evenements': await this.renderEvenements(); break;
+                        case 'devoirs': await this.renderDevoirs(); break;
+                        case 'cours': await this.renderCours(); break;
+                        case 'membres': await this.renderMembres(); break;
+                        case 'quiz': await this.renderQuiz(); break;
+                        case 'programme': await this.renderProgramme(); break;
+                        case 'boutique': await this.renderBoutique(); break;
+                        case 'badges': await this.renderBadges(); break;
+                        case 'parametres': await this.renderParametres(); break;
+                    }
+                } catch (error) {
+                    content.innerHTML = `<div class="card"><p style="color:var(--danger);">Erreur: ${error.message}</p></div>`;
+                }
+            }
+
+            async renderAccueil() {
+                const { data: canOpenChest } = await this.canOpenDailyChest();
+                
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <h2 style="margin-bottom:0.5rem;">Bienvenue, ${this.currentUser.username} ! 👋</h2>
+                        <p style="color:var(--text-secondary);">Vous êtes connecté(e) depuis ${this.currentUser.streak_days || 0} jour(s) d'affilée 🔥</p>
+                    </div>
+
+                    ${canOpenChest ? `
+                    <div class="card">
+                        <div class="card-title">Coffre quotidien disponible ! 🎁</div>
+                        <div class="chest-container">
+                            <div class="chest-icon" onclick="app.openDailyChest()">📦</div>
+                            <p style="color:var(--text-secondary);">Cliquez pour ouvrir</p>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${this.currentUser.points_s || 0}</div>
+                            <div class="stat-label">Points S</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${this.currentUser.streak_days || 0}</div>
+                            <div class="stat-label">Série</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Accès rapide</div>
+                        <div class="quick-actions">
+                            <div class="quick-action-card" onclick="app.showSection('boutique'); app.activateNav('boutique')">
+                                <div class="quick-action-icon">🛒</div>
+                                <div class="quick-action-label">Boutique</div>
+                            </div>
+                            <div class="quick-action-card" onclick="app.showSection('quiz'); app.activateNav('quiz')">
+                                <div class="quick-action-icon">❓</div>
+                                <div class="quick-action-label">Quiz</div>
+                            </div>
+                            <div class="quick-action-card" onclick="app.showSection('messages'); app.activateNav('messages')">
+                                <div class="quick-action-icon">💬</div>
+                                <div class="quick-action-label">Messages</div>
+                            </div>
+                            <div class="quick-action-card" onclick="app.showSection('cours'); app.activateNav('cours')">
+                                <div class="quick-action-icon">📖</div>
+                                <div class="quick-action-label">Cours</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            activateNav(section) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.dataset.section === section) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+
+            async canOpenDailyChest() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const { data } = await supabaseClient
+                    .from('daily_chests')
+                    .select('*')
+                    .eq('user_id', this.currentUser.id)
+                    .gte('opened_at', today.toISOString())
+                    .single();
+
+                return { data: !data };
+            }
+
+            async openDailyChest() {
+                const reward = Math.floor(Math.random() * 50) + 10;
+
+                await supabaseClient
+                    .from('daily_chests')
+                    .insert({
+                        user_id: this.currentUser.id,
+                        opened_at: new Date().toISOString(),
+                        reward_points: reward
+                    });
+
+                await this.updatePoints(reward);
+                this.showToast(`🎉 Vous avez gagné ${reward} Points S !`, 'success');
+                this.showSection('accueil');
+            }
+
+            async updatePoints(amount) {
+                const newPoints = (this.currentUser.points_s || 0) + amount;
+                
+                await supabaseClient
+                    .from('users')
+                    .update({ points_s: newPoints })
+                    .eq('id', this.currentUser.id);
+
+                this.currentUser.points_s = newPoints;
+                const pointsEl = document.getElementById('points-value');
+                if (pointsEl) pointsEl.textContent = newPoints;
+            }
+
+            async renderBoutique() {
+                const { data: items } = await supabaseClient
+                    .from('shop_items')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Boutique 🛒</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateShopItemModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${items && items.length > 0 ? `
+                        <div class="grid">
+                            ${items.map(item => `
+                                <div class="item-card">
+                                    ${item.image_url ? `<img src="${item.image_url}" class="item-image" onerror="this.style.display='none'" alt="${item.name}">` : '<div class="item-image" style="display:flex;align-items:center;justify-content:center;font-size:4rem;">🎁</div>'}
+                                    <div class="item-title">${item.name}</div>
+                                    <div class="item-description">${item.description || ''}</div>
+                                    <div class="item-price">💎 ${item.price_points}</div>
+                                    <div class="item-actions">
+                                        ${!isOwner ? `<button class="btn btn-primary btn-sm" onclick="app.purchaseItem('${item.id}', ${item.price_points})">Acheter</button>` : ''}
+                                        ${isOwner ? `
+                                            <button class="btn btn-success btn-sm" onclick="app.editShopItem('${item.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('shop_items', '${item.id}')">Supprimer</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">📦</div><p>Aucun article disponible</p></div>'}
+                `;
+            }
+
+            showCreateShopItemModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un article</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="item-name" placeholder="Nom de l'article">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="item-description" placeholder="Description de l'article"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S *</label>
+                        <input type="number" class="form-input" id="item-price" min="0" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" class="form-input" id="item-image" placeholder="https://...">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createShopItem()">Créer</button>
+                `);
+            }
+
+            async createShopItem() {
+                const name = document.getElementById('item-name').value.trim();
+                const description = document.getElementById('item-description').value.trim();
+                const price = parseInt(document.getElementById('item-price').value);
+                const image = document.getElementById('item-image').value.trim();
+
+                if (!name || price < 0) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('shop_items').insert({
+                    name, 
+                    description, 
+                    price_points: price, 
+                    image_url: image, 
+                    created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Article créé !', 'success');
+                this.showSection('boutique');
+            }
+
+            async editShopItem(id) {
+                const { data: item } = await supabaseClient
+                    .from('shop_items')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!item) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier l'article</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="edit-item-name" value="${item.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-item-description">${item.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S *</label>
+                        <input type="number" class="form-input" id="edit-item-price" value="${item.price_points}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" class="form-input" id="edit-item-image" value="${item.image_url || ''}">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateShopItem('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateShopItem(id) {
+                const name = document.getElementById('edit-item-name').value.trim();
+                const description = document.getElementById('edit-item-description').value.trim();
+                const price = parseInt(document.getElementById('edit-item-price').value);
+                const image = document.getElementById('edit-item-image').value.trim();
+
+                if (!name || price < 0) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('shop_items')
+                    .update({ name, description, price_points: price, image_url: image })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Article mis à jour !', 'success');
+                this.showSection('boutique');
+            }
+
+            async purchaseItem(itemId, price) {
+                if (this.currentUser.points_s < price) {
+                    this.showToast('Points S insuffisants !', 'danger');
+                    return;
+                }
+
+                if (!confirm(`Acheter cet article pour ${price} Points S ?`)) return;
+
+                await supabaseClient.from('user_purchases').insert({
+                    user_id: this.currentUser.id, 
+                    item_id: itemId
+                });
+
+                await this.updatePoints(-price);
+                this.showToast('Achat réussi !', 'success');
+                this.showSection('boutique');
+            }
+
+            async renderPosts() {
+                const { data: posts } = await supabaseClient
+                    .from('posts')
+                    .select('*, users:user_id(username)')
+                    .order('created_at', { ascending: false });
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Posts</div>
+                            <button class="btn btn-primary btn-sm" onclick="app.showCreatePostModal()">➕ Publier</button>
+                        </div>
+                    </div>
+
+                    ${posts && posts.length > 0 ? `
+                        <div class="grid">
+                            ${posts.map(post => `
+                                <div class="item-card">
+                                    ${post.image_url ? `<img src="${post.image_url}" class="item-image" onerror="this.style.display='none'" alt="${post.title}">` : ''}
+                                    <div class="item-title">${post.title}</div>
+                                    <div class="item-description">${post.description}</div>
+                                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-top:1rem;">Par ${post.users?.username || 'Anonyme'} • ${new Date(post.created_at).toLocaleDateString()}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">📝</div><p>Aucun post</p></div>'}
+                `;
+            }
+
+            showCreatePostModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un post</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="post-title" placeholder="Titre du post">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contenu *</label>
+                        <textarea class="form-textarea" id="post-description" placeholder="Partagez quelque chose..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL (optionnel)</label>
+                        <input type="url" class="form-input" id="post-image" placeholder="https://...">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createPost()">Publier</button>
+                `);
+            }
+
+            async createPost() {
+                const title = document.getElementById('post-title').value.trim();
+                const description = document.getElementById('post-description').value.trim();
+                const image = document.getElementById('post-image').value.trim();
+
+                if (!title || !description) {
+                    this.showToast('Veuillez remplir tous les champs', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('posts').insert({
+                    user_id: this.currentUser.id, 
+                    title, 
+                    description, 
+                    image_url: image
+                });
+
+                await this.updatePoints(5);
+                this.closeModal();
+                this.showToast('Post publié ! +5 Points S', 'success');
+                this.showSection('posts');
+            }
+
+            async renderMessages() {
+                const { data: users } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .neq('id', this.currentUser.id)
+                    .order('username');
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Messages 💬</div>
+                        <div class="message-list">
+                            ${users && users.length > 0 ? users.map(user => `
+                                <div class="message-item" onclick="app.openChat('${user.id}', '${user.username.replace(/'/g, "\\'")}')">
+                                    <div class="avatar">${user.username[0].toUpperCase()}</div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-name">${user.username}${user.is_online ? '<span class="online-dot"></span>' : ''}</span>
+                                        </div>
+                                        <div class="message-preview">Cliquez pour discuter</div>
+                                    </div>
+                                </div>
+                            `).join('') : '<div class="empty-state"><div class="empty-icon">💬</div><p>Aucun membre</p></div>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            async openChat(userId, username) {
+                const { data: messages } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(`and(sender_id.eq.${this.currentUser.id},receiver_id.eq.${userId}),and(sender_id.eq.${userId},receiver_id.eq.${this.currentUser.id})`)
+                    .order('created_at', { ascending: true });
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">${username}</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div style="max-height:400px;overflow-y:auto;margin-bottom:1rem;padding:1rem;background:var(--bg-primary);border-radius:8px;">
+                        ${messages && messages.length > 0 ? messages.map(msg => `
+                            <div style="margin-bottom:1rem;text-align:${msg.sender_id === this.currentUser.id ? 'right' : 'left'};">
+                                <div style="display:inline-block;background:${msg.sender_id === this.currentUser.id ? 'var(--accent)' : 'var(--bg-card)'};padding:0.75rem 1rem;border-radius:12px;max-width:70%;word-wrap:break-word;">
+                                    ${msg.content}
+                                </div>
+                                <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.25rem;">
+                                    ${new Date(msg.created_at).toLocaleTimeString()}
+                                </div>
+                            </div>
+                        `).join('') : '<p style="text-align:center;color:var(--text-secondary);">Aucun message</p>'}
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <textarea class="form-textarea" id="message-content" placeholder="Votre message..." rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.sendMessage('${userId}')">Envoyer</button>
+                `);
+            }
+
+            async sendMessage(receiverId) {
+                const content = document.getElementById('message-content').value.trim();
+                if (!content) {
+                    this.showToast('Le message ne peut pas être vide', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('messages').insert({
+                    sender_id: this.currentUser.id, 
+                    receiver_id: receiverId, 
+                    content, 
+                    type: 'text'
+                });
+
+                await this.updatePoints(2);
+                this.closeModal();
+                this.showToast('Message envoyé ! +2 Points S', 'success');
+            }
+
+            async renderAbonnements() {
+                const { data: subs } = await supabaseClient
+                    .from('subscriptions')
+                    .select('*')
+                    .order('price_points', { ascending: true });
+                
+                const { data: userSubs } = await supabaseClient
+                    .from('user_subscriptions')
+                    .select('*')
+                    .eq('user_id', this.currentUser.id)
+                    .eq('status', 'active');
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Abonnements</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateSubModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${subs && subs.length > 0 ? `
+                        <div class="grid">
+                            ${subs.map(sub => {
+                                const hasSub = userSubs?.find(us => us.subscription_id === sub.id);
+                                return `
+                                <div class="item-card">
+                                    <div class="item-title">${sub.name}</div>
+                                    <div class="item-description">${sub.description || ''}</div>
+                                    <div class="item-price">💎 ${sub.price_points}</div>
+                                    ${hasSub ? '<p style="color:var(--success);font-weight:600;margin-bottom:1rem;">✓ Actif</p>' : ''}
+                                    <div class="item-actions">
+                                        ${!isOwner && !hasSub ? `<button class="btn btn-primary btn-sm" onclick="app.requestSub('${sub.id}', ${sub.price_points})">Demander</button>` : ''}
+                                        ${isOwner ? `
+                                            <button class="btn btn-success btn-sm" onclick="app.editSub('${sub.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('subscriptions', '${sub.id}')">Supprimer</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `}).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">⭐</div><p>Aucun abonnement</p></div>'}
+
+                    ${isOwner ? '<div class="card" style="margin-top:20px;"><div class="card-title">Demandes</div><div id="sub-requests"></div></div>' : ''}
+                `;
+
+                if (isOwner) {
+                    this.loadSubRequests();
+                }
+            }
+
+            async loadSubRequests() {
+                const { data: requests } = await supabaseClient
+                    .from('user_subscriptions')
+                    .select('*, users:user_id(username), subscriptions:subscription_id(name, price_points)')
+                    .eq('status', 'pending');
+
+                const container = document.getElementById('sub-requests');
+                if (requests && requests.length > 0) {
+                    container.innerHTML = `<div class="message-list">
+                        ${requests.map(req => `
+                            <div class="message-item">
+                                <div class="avatar">${req.users?.username?.[0]?.toUpperCase() || 'U'}</div>
+                                <div class="message-content">
+                                    <div class="message-name">${req.users?.username || 'Utilisateur'}</div>
+                                    <div class="message-preview">${req.subscriptions?.name || 'Abonnement'} (${req.subscriptions?.price_points} Points S)</div>
+                                </div>
+                                <div style="display:flex;gap:8px;flex-shrink:0;">
+                                    <button class="btn btn-success btn-sm" onclick="app.approveSubRequest('${req.id}', '${req.user_id}', ${req.subscriptions?.price_points})">✓</button>
+                                    <button class="btn btn-danger btn-sm" onclick="app.rejectSubRequest('${req.id}')">✕</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-secondary);">Aucune demande</p>';
+                }
+            }
+
+            showCreateSubModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un abonnement</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="sub-name" placeholder="Ex: Premium">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="sub-description" placeholder="Avantages de l'abonnement"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S *</label>
+                        <input type="number" class="form-input" id="sub-price" min="0" value="100">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createSub()">Créer</button>
+                `);
+            }
+
+            async createSub() {
+                const name = document.getElementById('sub-name').value.trim();
+                const description = document.getElementById('sub-description').value.trim();
+                const price = parseInt(document.getElementById('sub-price').value);
+
+                if (!name || price < 0) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('subscriptions').insert({
+                    name, description, price_points: price, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Abonnement créé !', 'success');
+                this.showSection('abonnements');
+            }
+
+            async editSub(id) {
+                const { data: sub } = await supabaseClient
+                    .from('subscriptions')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!sub) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier l'abonnement</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="edit-sub-name" value="${sub.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-sub-description">${sub.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S *</label>
+                        <input type="number" class="form-input" id="edit-sub-price" value="${sub.price_points}" min="0">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateSub('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateSub(id) {
+                const name = document.getElementById('edit-sub-name').value.trim();
+                const description = document.getElementById('edit-sub-description').value.trim();
+                const price = parseInt(document.getElementById('edit-sub-price').value);
+
+                if (!name || price < 0) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('subscriptions')
+                    .update({ name, description, price_points: price })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Abonnement mis à jour !', 'success');
+                this.showSection('abonnements');
+            }
+
+            async requestSub(subId, price) {
+                if (this.currentUser.points_s < price) {
+                    this.showToast('Points S insuffisants !', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('user_subscriptions').insert({
+                    user_id: this.currentUser.id, subscription_id: subId, status: 'pending'
+                });
+
+                this.showToast('Demande envoyée !', 'success');
+                this.showSection('abonnements');
+            }
+
+            async approveSubRequest(reqId, userId, price) {
+                await supabaseClient
+                    .from('user_subscriptions')
+                    .update({ status: 'active', approved_at: new Date().toISOString() })
+                    .eq('id', reqId);
+
+                const { data: user } = await supabaseClient
+                    .from('users')
+                    .select('points_s')
+                    .eq('id', userId)
+                    .single();
+
+                if (user) {
+                    await supabaseClient
+                        .from('users')
+                        .update({ points_s: user.points_s - price })
+                        .eq('id', userId);
+                }
+
+                this.showToast('Demande approuvée !', 'success');
+                this.showSection('abonnements');
+            }
+
+            async rejectSubRequest(reqId) {
+                await supabaseClient
+                    .from('user_subscriptions')
+                    .delete()
+                    .eq('id', reqId);
+
+                this.showToast('Demande refusée', 'success');
+                this.showSection('abonnements');
+            }
+
+            async renderEvenements() {
+                const { data: events } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .order('date', { ascending: true });
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Événements</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateEventModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${events && events.length > 0 ? `
+                        <div class="grid">
+                            ${events.map(event => `
+                                <div class="item-card">
+                                    <div class="item-title">${event.name}</div>
+                                    <div class="item-description">${event.description || ''}</div>
+                                    <p style="color:var(--text-secondary);margin:0.5rem 0;">📅 ${new Date(event.date).toLocaleString()}</p>
+                                    ${event.price_points > 0 ? `<div class="item-price">💎 ${event.price_points}</div>` : '<p style="color:var(--success);font-weight:600;margin-bottom:1rem;">Gratuit</p>'}
+                                    <div class="item-actions">
+                                        ${!isOwner ? `<button class="btn btn-primary btn-sm" onclick="app.participateEvent(${event.price_points})">Participer</button>` : ''}
+                                        ${isOwner ? `
+                                            <button class="btn btn-success btn-sm" onclick="app.editEvent('${event.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('events', '${event.id}')">Supprimer</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">🎉</div><p>Aucun événement</p></div>'}
+                `;
+            }
+
+            showCreateEventModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un événement</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="event-name" placeholder="Nom de l'événement">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="event-description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date et heure *</label>
+                        <input type="datetime-local" class="form-input" id="event-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S (0 pour gratuit)</label>
+                        <input type="number" class="form-input" id="event-price" min="0" value="0">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createEvent()">Créer</button>
+                `);
+            }
+
+            async createEvent() {
+                const name = document.getElementById('event-name').value.trim();
+                const description = document.getElementById('event-description').value.trim();
+                const date = document.getElementById('event-date').value;
+                const price = parseInt(document.getElementById('event-price').value) || 0;
+
+                if (!name || !date) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('events').insert({
+                    name, description, date, price_points: price, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Événement créé !', 'success');
+                this.showSection('evenements');
+            }
+
+            async editEvent(id) {
+                const { data: event } = await supabaseClient
+                    .from('events')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!event) return;
+
+                const dateValue = new Date(event.date).toISOString().slice(0, 16);
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier l'événement</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="edit-event-name" value="${event.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-event-description">${event.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date et heure *</label>
+                        <input type="datetime-local" class="form-input" id="edit-event-date" value="${dateValue}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S</label>
+                        <input type="number" class="form-input" id="edit-event-price" value="${event.price_points}" min="0">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateEvent('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateEvent(id) {
+                const name = document.getElementById('edit-event-name').value.trim();
+                const description = document.getElementById('edit-event-description').value.trim();
+                const date = document.getElementById('edit-event-date').value;
+                const price = parseInt(document.getElementById('edit-event-price').value) || 0;
+
+                if (!name || !date) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('events')
+                    .update({ name, description, date, price_points: price })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Événement mis à jour !', 'success');
+                this.showSection('evenements');
+            }
+
+            async participateEvent(price) {
+                if (price > 0) {
+                    if (this.currentUser.points_s < price) {
+                        this.showToast('Points S insuffisants !', 'danger');
+                        return;
+                    }
+                    await this.updatePoints(-price);
+                }
+                this.showToast('Inscription confirmée !', 'success');
+            }
+
+            async renderDevoirs() {
+                const { data: homework } = await supabaseClient
+                    .from('homework')
+                    .select('*')
+                    .order('due_date', { ascending: true });
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Devoirs</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateHwModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${homework && homework.length > 0 ? `
+                        <div class="grid">
+                            ${homework.map(hw => `
+                                <div class="item-card">
+                                    <div class="item-title">${hw.title}</div>
+                                    <div class="item-description">${hw.description || ''}</div>
+                                    <p style="color:var(--danger);margin-top:1rem;">⏰ À rendre: ${new Date(hw.due_date).toLocaleString()}</p>
+                                    ${isOwner ? `
+                                        <div class="item-actions" style="margin-top:1rem;">
+                                            <button class="btn btn-success btn-sm" onclick="app.editHomework('${hw.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('homework', '${hw.id}')">Supprimer</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">📚</div><p>Aucun devoir</p></div>'}
+                `;
+            }
+
+            showCreateHwModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un devoir</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="hw-title" placeholder="Titre du devoir">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="hw-description" placeholder="Instructions"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date limite *</label>
+                        <input type="datetime-local" class="form-input" id="hw-duedate">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createHomework()">Créer</button>
+                `);
+            }
+
+            async createHomework() {
+                const title = document.getElementById('hw-title').value.trim();
+                const description = document.getElementById('hw-description').value.trim();
+                const dueDate = document.getElementById('hw-duedate').value;
+
+                if (!title || !dueDate) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('homework').insert({
+                    title, description, due_date: dueDate, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Devoir créé !', 'success');
+                this.showSection('devoirs');
+            }
+
+            async editHomework(id) {
+                const { data: hw } = await supabaseClient
+                    .from('homework')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!hw) return;
+
+                const dateValue = new Date(hw.due_date).toISOString().slice(0, 16);
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier le devoir</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="edit-hw-title" value="${hw.title}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-hw-description">${hw.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date limite *</label>
+                        <input type="datetime-local" class="form-input" id="edit-hw-duedate" value="${dateValue}">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateHomework('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateHomework(id) {
+                const title = document.getElementById('edit-hw-title').value.trim();
+                const description = document.getElementById('edit-hw-description').value.trim();
+                const dueDate = document.getElementById('edit-hw-duedate').value;
+
+                if (!title || !dueDate) {
+                    this.showToast('Veuillez remplir les champs obligatoires', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('homework')
+                    .update({ title, description, due_date: dueDate })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Devoir mis à jour !', 'success');
+                this.showSection('devoirs');
+            }
+
+            async renderCours() {
+                const { data: courses } = await supabaseClient
+                    .from('courses')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Cours</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateCourseModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${courses && courses.length > 0 ? `
+                        <div class="grid">
+                            ${courses.map(course => `
+                                <div class="item-card">
+                                    <div class="item-title">${course.title}</div>
+                                    <div class="item-description">${course.description || ''}</div>
+                                    ${course.file_url ? `<a href="${course.file_url}" target="_blank" class="btn btn-primary btn-sm" style="margin-top:1rem;text-decoration:none;">Voir le cours</a>` : ''}
+                                    ${isOwner ? `
+                                        <div class="item-actions" style="margin-top:1rem;">
+                                            <button class="btn btn-success btn-sm" onclick="app.editCourse('${course.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('courses', '${course.id}')">Supprimer</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">📖</div><p>Aucun cours</p></div>'}
+                `;
+            }
+
+            showCreateCourseModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un cours</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="course-title" placeholder="Titre du cours">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="course-description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">URL du fichier</label>
+                        <input type="url" class="form-input" id="course-file" placeholder="https://...">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createCourse()">Créer</button>
+                `);
+            }
+
+            async createCourse() {
+                const title = document.getElementById('course-title').value.trim();
+                const description = document.getElementById('course-description').value.trim();
+                const file = document.getElementById('course-file').value.trim();
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('courses').insert({
+                    title, description, file_url: file, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Cours créé !', 'success');
+                this.showSection('cours');
+            }
+
+            async editCourse(id) {
+                const { data: course } = await supabaseClient
+                    .from('courses')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!course) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier le cours</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="edit-course-title" value="${course.title}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-course-description">${course.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">URL du fichier</label>
+                        <input type="url" class="form-input" id="edit-course-file" value="${course.file_url || ''}">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateCourse('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateCourse(id) {
+                const title = document.getElementById('edit-course-title').value.trim();
+                const description = document.getElementById('edit-course-description').value.trim();
+                const file = document.getElementById('edit-course-file').value.trim();
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('courses')
+                    .update({ title, description, file_url: file })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Cours mis à jour !', 'success');
+                this.showSection('cours');
+            }
+
+            async renderMembres() {
+                const { data: members } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Membres</div>
+                        <div class="message-list">
+                            ${members && members.length > 0 ? members.map(member => `
+                                <div class="message-item" onclick="app.showMemberProfile('${member.id}')">
+                                    <div class="avatar">${member.username[0].toUpperCase()}</div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-name">${member.username}${member.is_online ? '<span class="online-dot"></span>' : ''}</span>
+                                            <span class="message-time">${member.streak_days || 0} 🔥</span>
+                                        </div>
+                                        <div class="message-preview">${member.role === 'owner' ? '👑 Propriétaire' : 'Membre'} • ${member.points_s || 0} Points S</div>
+                                    </div>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            async showMemberProfile(memberId) {
+                const { data: member } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', memberId)
+                    .single();
+
+                const { data: badges } = await supabaseClient
+                    .from('user_badges')
+                    .select('*, badges:badge_id(*)')
+                    .eq('user_id', memberId);
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">${member.username}</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div style="text-align:center;margin:2rem 0;">
+                        <div class="avatar" style="width:100px;height:100px;font-size:2.5rem;margin:0 auto 1rem;">${member.username[0].toUpperCase()}</div>
+                        <h3>${member.username}</h3>
+                        <p style="color:var(--text-secondary);">${member.role === 'owner' ? '👑 Propriétaire' : 'Membre'}</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${member.points_s || 0}</div>
+                            <div class="stat-label">Points S</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${member.streak_days || 0}</div>
+                            <div class="stat-label">Série</div>
+                        </div>
+                    </div>
+                    ${badges && badges.length > 0 ? `
+                        <h3 style="margin:2rem 0 1rem;">Badges</h3>
+                        <div class="badge-grid">
+                            ${badges.map(b => `
+                                <div class="badge-item earned">
+                                    <div class="badge-icon">${b.badges?.image_url || '🏆'}</div>
+                                    <div class="badge-name">${b.badges?.name || 'Badge'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `);
+            }
+
+            async renderQuiz() {
+                const { data: quizzes } = await supabaseClient
+                    .from('quizzes')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Quiz</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateQuizModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${quizzes && quizzes.length > 0 ? `
+                        <div class="grid">
+                            ${quizzes.map(quiz => `
+                                <div class="item-card">
+                                    <div class="item-title">${quiz.title}</div>
+                                    <div class="item-description">${quiz.description || ''}</div>
+                                    ${quiz.price_points > 0 ? `<div class="item-price">💎 ${quiz.price_points}</div>` : ''}
+                                    <p style="color:var(--success);font-size:0.9rem;margin-bottom:1rem;">Récompense: ${quiz.reward_points} Points S</p>
+                                    <div class="item-actions">
+                                        ${!isOwner ? `<button class="btn btn-primary btn-sm" onclick="app.startQuiz('${quiz.id}', ${quiz.price_points}, ${quiz.reward_points})">Commencer</button>` : ''}
+                                        ${isOwner ? `
+                                            <button class="btn btn-success btn-sm" onclick="app.editQuiz('${quiz.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('quizzes', '${quiz.id}')">Supprimer</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">❓</div><p>Aucun quiz</p></div>'}
+                `;
+            }
+
+            showCreateQuizModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un quiz</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="quiz-title" placeholder="Titre du quiz">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="quiz-description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S</label>
+                        <input type="number" class="form-input" id="quiz-price" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Récompense en Points S</label>
+                        <input type="number" class="form-input" id="quiz-reward" min="0" value="10">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createQuiz()">Créer</button>
+                `);
+            }
+
+            async createQuiz() {
+                const title = document.getElementById('quiz-title').value.trim();
+                const description = document.getElementById('quiz-description').value.trim();
+                const price = parseInt(document.getElementById('quiz-price').value) || 0;
+                const reward = parseInt(document.getElementById('quiz-reward').value) || 10;
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('quizzes').insert({
+                    title, description, questions: [], price_points: price, reward_points: reward, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Quiz créé !', 'success');
+                this.showSection('quiz');
+            }
+
+            async editQuiz(id) {
+                const { data: quiz } = await supabaseClient
+                    .from('quizzes')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!quiz) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier le quiz</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="edit-quiz-title" value="${quiz.title}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-quiz-description">${quiz.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S</label>
+                        <input type="number" class="form-input" id="edit-quiz-price" value="${quiz.price_points}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Récompense en Points S</label>
+                        <input type="number" class="form-input" id="edit-quiz-reward" value="${quiz.reward_points}" min="0">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateQuiz('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateQuiz(id) {
+                const title = document.getElementById('edit-quiz-title').value.trim();
+                const description = document.getElementById('edit-quiz-description').value.trim();
+                const price = parseInt(document.getElementById('edit-quiz-price').value) || 0;
+                const reward = parseInt(document.getElementById('edit-quiz-reward').value) || 10;
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('quizzes')
+                    .update({ title, description, price_points: price, reward_points: reward })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Quiz mis à jour !', 'success');
+                this.showSection('quiz');
+            }
+
+            async startQuiz(quizId, price, reward) {
+                if (price > 0) {
+                    if (this.currentUser.points_s < price) {
+                        this.showToast('Points S insuffisants !', 'danger');
+                        return;
+                    }
+                    await this.updatePoints(-price);
+                }
+
+                await supabaseClient.from('quiz_completions').insert({
+                    user_id: this.currentUser.id, quiz_id: quizId, score: 100
+                });
+
+                await this.updatePoints(reward);
+                this.showToast(`Quiz complété ! +${reward} Points S`, 'success');
+                this.showSection('quiz');
+            }
+
+            async renderProgramme() {
+                const { data: programs } = await supabaseClient
+                    .from('programs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Programmes</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateProgramModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${programs && programs.length > 0 ? `
+                        <div class="grid">
+                            ${programs.map(program => `
+                                <div class="item-card">
+                                    <div class="item-title">${program.title}</div>
+                                    <div class="item-description">${program.description || ''}</div>
+                                    ${program.price_points > 0 ? `<div class="item-price">💎 ${program.price_points}</div>` : ''}
+                                    <p style="color:var(--success);font-size:0.9rem;margin-bottom:1rem;">Récompense: ${program.reward_points} Points S</p>
+                                    <div class="item-actions">
+                                        ${!isOwner ? `<button class="btn btn-primary btn-sm" onclick="app.startProgram('${program.id}', ${program.price_points}, ${program.reward_points})">Commencer</button>` : ''}
+                                        ${isOwner ? `
+                                            <button class="btn btn-success btn-sm" onclick="app.editProgram('${program.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('programs', '${program.id}')">Supprimer</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">🎯</div><p>Aucun programme</p></div>'}
+                `;
+            }
+
+            showCreateProgramModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un programme</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="program-title" placeholder="Titre du programme">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="program-description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S</label>
+                        <input type="number" class="form-input" id="program-price" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Récompense en Points S</label>
+                        <input type="number" class="form-input" id="program-reward" min="0" value="20">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createProgram()">Créer</button>
+                `);
+            }
+
+            async createProgram() {
+                const title = document.getElementById('program-title').value.trim();
+                const description = document.getElementById('program-description').value.trim();
+                const price = parseInt(document.getElementById('program-price').value) || 0;
+                const reward = parseInt(document.getElementById('program-reward').value) || 20;
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('programs').insert({
+                    title, description, exercises: [], price_points: price, reward_points: reward, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Programme créé !', 'success');
+                this.showSection('programme');
+            }
+
+            async editProgram(id) {
+                const { data: program } = await supabaseClient
+                    .from('programs')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!program) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier le programme</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Titre *</label>
+                        <input type="text" class="form-input" id="edit-program-title" value="${program.title}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-program-description">${program.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prix en Points S</label>
+                        <input type="number" class="form-input" id="edit-program-price" value="${program.price_points}" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Récompense en Points S</label>
+                        <input type="number" class="form-input" id="edit-program-reward" value="${program.reward_points}" min="0">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateProgram('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateProgram(id) {
+                const title = document.getElementById('edit-program-title').value.trim();
+                const description = document.getElementById('edit-program-description').value.trim();
+                const price = parseInt(document.getElementById('edit-program-price').value) || 0;
+                const reward = parseInt(document.getElementById('edit-program-reward').value) || 20;
+
+                if (!title) {
+                    this.showToast('Veuillez remplir le titre', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('programs')
+                    .update({ title, description, price_points: price, reward_points: reward })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Programme mis à jour !', 'success');
+                this.showSection('programme');
+            }
+
+            async startProgram(programId, price, reward) {
+                if (price > 0) {
+                    if (this.currentUser.points_s < price) {
+                        this.showToast('Points S insuffisants !', 'danger');
+                        return;
+                    }
+                    await this.updatePoints(-price);
+                }
+
+                await supabaseClient.from('program_completions').insert({
+                    user_id: this.currentUser.id, program_id: programId, progress: 100
+                });
+
+                await this.updatePoints(reward);
+                this.showToast(`Programme complété ! +${reward} Points S`, 'success');
+                this.showSection('programme');
+            }
+
+            async renderBadges() {
+                const { data: allBadges } = await supabaseClient
+                    .from('badges')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                const { data: userBadges } = await supabaseClient
+                    .from('user_badges')
+                    .select('badge_id')
+                    .eq('user_id', this.currentUser.id);
+                
+                const earnedIds = userBadges?.map(ub => ub.badge_id) || [];
+                const isOwner = this.currentUser.role === 'owner';
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Badges</div>
+                            ${isOwner ? '<button class="btn btn-primary btn-sm" onclick="app.showCreateBadgeModal()">➕ Créer</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${allBadges && allBadges.length > 0 ? `
+                        <div class="badge-grid">
+                            ${allBadges.map(badge => {
+                                const earned = earnedIds.includes(badge.id);
+                                return `
+                                <div class="badge-item ${earned ? 'earned' : 'locked'}">
+                                    <div class="badge-icon">${badge.image_url || '🏆'}</div>
+                                    <div class="badge-name">${badge.name}</div>
+                                    <div class="item-description" style="font-size:0.8rem;margin:0.5rem 0;color:var(--text-secondary);">${badge.description || ''}</div>
+                                    ${earned ? '<div class="badge-status">✓ Obtenu</div>' : ''}
+                                    ${isOwner ? `
+                                        <div class="item-actions" style="margin-top:1rem;">
+                                            <button class="btn btn-success btn-sm" onclick="app.editBadge('${badge.id}')">Modifier</button>
+                                            <button class="btn btn-danger btn-sm" onclick="app.deleteItem('badges', '${badge.id}')">Supprimer</button>
+                                            ${!earned ? `<button class="btn btn-primary btn-sm" onclick="app.showAwardBadgeModal('${badge.id}')">Attribuer</button>` : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `}).join('')}
+                        </div>
+                    ` : '<div class="empty-state"><div class="empty-icon">🏆</div><p>Aucun badge</p></div>'}
+                `;
+            }
+
+            showCreateBadgeModal() {
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Créer un badge</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="badge-name" placeholder="Nom du badge">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="badge-description" placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emoji/Icône</label>
+                        <input type="text" class="form-input" id="badge-image" placeholder="🏆" value="🏆">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.createBadge()">Créer</button>
+                `);
+            }
+
+            async createBadge() {
+                const name = document.getElementById('badge-name').value.trim();
+                const description = document.getElementById('badge-description').value.trim();
+                const image = document.getElementById('badge-image').value.trim() || '🏆';
+
+                if (!name) {
+                    this.showToast('Veuillez remplir le nom', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('badges').insert({
+                    name, description, image_url: image, created_by: this.currentUser.id
+                });
+
+                this.closeModal();
+                this.showToast('Badge créé !', 'success');
+                this.showSection('badges');
+            }
+
+            async editBadge(id) {
+                const { data: badge } = await supabaseClient
+                    .from('badges')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (!badge) return;
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Modifier le badge</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nom *</label>
+                        <input type="text" class="form-input" id="edit-badge-name" value="${badge.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="edit-badge-description">${badge.description || ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Emoji/Icône</label>
+                        <input type="text" class="form-input" id="edit-badge-image" value="${badge.image_url || '🏆'}">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.updateBadge('${id}')">Mettre à jour</button>
+                `);
+            }
+
+            async updateBadge(id) {
+                const name = document.getElementById('edit-badge-name').value.trim();
+                const description = document.getElementById('edit-badge-description').value.trim();
+                const image = document.getElementById('edit-badge-image').value.trim() || '🏆';
+
+                if (!name) {
+                    this.showToast('Veuillez remplir le nom', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('badges')
+                    .update({ name, description, image_url: image })
+                    .eq('id', id);
+
+                this.closeModal();
+                this.showToast('Badge mis à jour !', 'success');
+                this.showSection('badges');
+            }
+
+            async showAwardBadgeModal(badgeId) {
+                const { data: members } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('role', 'member')
+                    .order('username');
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Attribuer le badge</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sélectionner un membre</label>
+                        <select class="form-select" id="award-member">
+                            ${members && members.length > 0 ? members.map(m => `<option value="${m.id}">${m.username}</option>`).join('') : '<option>Aucun membre</option>'}
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.awardBadge('${badgeId}')">Attribuer</button>
+                `);
+            }
+
+            async awardBadge(badgeId) {
+                const memberId = document.getElementById('award-member').value;
+                
+                if (!memberId) {
+                    this.showToast('Veuillez sélectionner un membre', 'danger');
+                    return;
+                }
+
+                await supabaseClient.from('user_badges').insert({
+                    user_id: memberId, badge_id: badgeId
+                });
+
+                this.closeModal();
+                this.showToast('Badge attribué !', 'success');
+                this.showSection('badges');
+            }
+
+            async renderRecherche() {
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Recherche 🔍</div>
+                        <input type="text" class="search-bar" id="search-input" placeholder="Rechercher des membres, posts, cours...">
+                        <div id="search-results"></div>
+                    </div>
+                `;
+
+                document.getElementById('search-input').addEventListener('input', (e) => this.performSearch(e.target.value));
+            }
+
+            async performSearch(query) {
+                if (!query.trim()) {
+                    document.getElementById('search-results').innerHTML = '';
+                    return;
+                }
+
+                const { data: users } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .ilike('username', `%${query}%`)
+                    .limit(5);
+
+                const { data: posts } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .ilike('title', `%${query}%`)
+                    .limit(5);
+
+                const { data: courses } = await supabaseClient
+                    .from('courses')
+                    .select('*')
+                    .ilike('title', `%${query}%`)
+                    .limit(5);
+
+                let html = '';
+
+                if (users && users.length > 0) {
+                    html += '<h3 style="margin:1.5rem 0 1rem;">Membres</h3><div class="message-list">';
+                    users.forEach(user => {
+                        html += `
+                            <div class="message-item" onclick="app.showMemberProfile('${user.id}')">
+                                <div class="avatar">${user.username[0].toUpperCase()}</div>
+                                <div class="message-content">
+                                    <div class="message-name">${user.username}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+
+                if (posts && posts.length > 0) {
+                    html += '<h3 style="margin:1.5rem 0 1rem;">Posts</h3><div class="grid">';
+                    posts.forEach(post => {
+                        html += `
+                            <div class="item-card">
+                                <div class="item-title">${post.title}</div>
+                                <div class="item-description">${post.description}</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+
+                if (courses && courses.length > 0) {
+                    html += '<h3 style="margin:1.5rem 0 1rem;">Cours</h3><div class="grid">';
+                    courses.forEach(course => {
+                        html += `
+                            <div class="item-card">
+                                <div class="item-title">${course.title}</div>
+                                <div class="item-description">${course.description}</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+
+                document.getElementById('search-results').innerHTML = html || '<div class="empty-state"><div class="empty-icon">🔍</div><p>Aucun résultat</p></div>';
+            }
+
+            async renderParametres() {
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Paramètres</div>
+                        <div class="form-group">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-input" id="settings-username" value="${this.currentUser.username}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="settings-email" value="${this.currentUser.email}">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;margin-bottom:1rem;" onclick="app.saveSettings()">Enregistrer</button>
+                        <button class="btn btn-danger" style="width:100%;" onclick="app.logout()">Déconnexion</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Informations</div>
+                        <p><strong>Rôle:</strong> ${this.currentUser.role === 'owner' ? '👑 Propriétaire' : 'Membre'}</p>
+                        <p><strong>Points S:</strong> ${this.currentUser.points_s || 0}</p>
+                        <p><strong>Série:</strong> ${this.currentUser.streak_days || 0} jour(s)</p>
+                        <p><strong>Membre depuis:</strong> ${new Date(this.currentUser.created_at).toLocaleDateString()}</p>
+                    </div>
+                `;
+            }
+
+            async saveSettings() {
+                const username = document.getElementById('settings-username').value.trim();
+                const email = document.getElementById('settings-email').value.trim();
+
+                if (!username || !email) {
+                    this.showToast('Veuillez remplir tous les champs', 'danger');
+                    return;
+                }
+
+                await supabaseClient
+                    .from('users')
+                    .update({ username, email })
+                    .eq('id', this.currentUser.id);
+
+                this.currentUser.username = username;
+                this.currentUser.email = email;
+                this.showToast('Paramètres enregistrés !', 'success');
+            }
+
+            async showNotifications() {
+                const { data: notifications } = await supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', this.currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                this.showModal(`
+                    <div class="modal-header">
+                        <h2 class="modal-title">Notifications</h2>
+                        <button class="close-btn" onclick="app.closeModal()">×</button>
+                    </div>
+                    ${notifications && notifications.length > 0 ? `
+                        <div style="max-height:400px;overflow-y:auto;">
+                            ${notifications.map(notif => `
+                                <div class="message-item" style="${!notif.read ? 'background:var(--bg-primary);' : ''}">
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-name">${notif.type}</span>
+                                            <span class="message-time">${new Date(notif.created_at).toLocaleString()}</span>
+                                        </div>
+                                        <div class="message-preview">${notif.content}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="app.markAllRead()">Tout marquer comme lu</button>
+                    ` : '<div class="empty-state"><div class="empty-icon">🔔</div><p>Aucune notification</p></div>'}
+                `);
+            }
+
+            async markAllRead() {
+                await supabaseClient
+                    .from('notifications')
+                    .update({ read: true })
+                    .eq('user_id', this.currentUser.id);
+
+                this.notifications = [];
+                this.closeModal();
+                this.renderApp();
+            }
+
+            async deleteItem(table, id) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
+
+                await supabaseClient
+                    .from(table)
+                    .delete()
+                    .eq('id', id);
+
+                this.showToast('Supprimé !', 'success');
+                this.showSection(this.currentSection);
+            }
+
+            showModal(content) {
+                document.getElementById('modal-container').innerHTML = `
+                    <div class="modal active">
+                        <div class="modal-content">${content}</div>
+                    </div>
+                `;
+            }
+
+            closeModal() {
+                document.getElementById('modal-container').innerHTML = '';
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = `<p style="margin:0;">${message}</p>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
+                    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl);
+            });
+        }
+    </script>
+</body>
+</html>
