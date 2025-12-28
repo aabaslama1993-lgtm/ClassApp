@@ -865,10 +865,140 @@
                 await this.checkAuth();
                 if (this.currentUser) {
                     await this.loadUserData();
+                    await this.setupPushNotifications();
                     this.renderApp();
                     await this.checkStreak();
+                    this.startNotificationListener();
                 } else {
                     this.renderAuth();
+                }
+            }
+
+            async setupPushNotifications() {
+                if (!('Notification' in window)) {
+                    console.log('❌ Notifications non supportées');
+                    return;
+                }
+
+                if (Notification.permission === 'default') {
+                    const permission = await Notification.requestPermission();
+                    console.log('🔔 Permission notifications:', permission);
+                }
+
+                if (Notification.permission === 'granted') {
+                    console.log('✅ Notifications activées !');
+                    // Afficher une notification de bienvenue
+                    this.sendLocalNotification('ClassApp', `Bienvenue ${this.currentUser.username} ! 🎉`);
+                }
+            }
+
+            sendLocalNotification(title, body, data = {}) {
+                if (Notification.permission === 'granted') {
+                    const notification = new Notification(title, {
+                        body,
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192"><rect width="192" height="192" fill="%233730ed"/><text x="50%" y="50%" font-size="80" fill="%23ffffff" text-anchor="middle" dominant-baseline="middle">C</text></svg>',
+                        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192"><rect width="192" height="192" fill="%233730ed"/><text x="50%" y="50%" font-size="80" fill="%23ffffff" text-anchor="middle" dominant-baseline="middle">C</text></svg>',
+                        tag: data.tag || 'classapp',
+                        requireInteraction: false,
+                        silent: false,
+                        data: data
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                        if (data.action) {
+                            this.handleNotificationClick(data.action);
+                        }
+                    };
+
+                    // Son de notification (si supporté)
+                    try {
+                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYHHmm98OScTgwOUrPn77dlGwU7k9nzw3ElBSl+zPLaizsIHGS06+mnVBILTKXh8bllHAU2jdXxxnwpBSh+zPLaizwIHWW06+moVxMNTqjj8rllHgY7lNnzxHMnBSh+zPLajDwIHWS16+mnVhMMTaXi8r1pHwY7lNnzw3MnBSd+zPLajT0IHmW26+qlVxMNTqjj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNTqnj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBSh9zPLajD0IH2a36+qmVxQNT6nj8r5qIAY8ldnzxHMnBQ==');
+                        audio.volume = 0.3;
+                        audio.play().catch(() => {});
+                    } catch (e) {}
+
+                    console.log('🔔 Notification envoyée:', title);
+                    return notification;
+                }
+            }
+
+            handleNotificationClick(action) {
+                switch(action) {
+                    case 'messages':
+                        this.showSection('messages');
+                        this.activateNav('messages');
+                        break;
+                    case 'posts':
+                        this.showSection('posts');
+                        this.activateNav('posts');
+                        break;
+                    default:
+                        this.showSection('accueil');
+                        break;
+                }
+            }
+
+            startNotificationListener() {
+                // Vérifier les nouvelles notifications toutes les 30 secondes
+                setInterval(async () => {
+                    await this.checkNewNotifications();
+                }, 30000);
+
+                // Vérifier immédiatement
+                this.checkNewNotifications();
+            }
+
+            async checkNewNotifications() {
+                try {
+                    // Vérifier les nouveaux messages
+                    const { data: newMessages } = await supabaseClient
+                        .from('messages')
+                        .select('*, users:sender_id(username)')
+                        .eq('receiver_id', this.currentUser.id)
+                        .eq('read', false)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (newMessages && newMessages.length > 0) {
+                        const msg = newMessages[0];
+                        const lastNotifiedMessage = localStorage.getItem('lastNotifiedMessage');
+                        
+                        if (lastNotifiedMessage !== msg.id) {
+                            this.sendLocalNotification(
+                                `💬 ${msg.users?.username || 'Nouveau message'}`,
+                                msg.content.substring(0, 100),
+                                { action: 'messages', tag: 'message-' + msg.id }
+                            );
+                            localStorage.setItem('lastNotifiedMessage', msg.id);
+                        }
+                    }
+
+                    // Vérifier les nouvelles notifications système
+                    const { data: newNotifs } = await supabaseClient
+                        .from('notifications')
+                        .select('*')
+                        .eq('user_id', this.currentUser.id)
+                        .eq('read', false)
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (newNotifs && newNotifs.length > 0) {
+                        const notif = newNotifs[0];
+                        const lastNotifiedSystem = localStorage.getItem('lastNotifiedSystem');
+                        
+                        if (lastNotifiedSystem !== notif.id) {
+                            this.sendLocalNotification(
+                                'ClassApp',
+                                notif.content,
+                                { tag: 'notif-' + notif.id }
+                            );
+                            localStorage.setItem('lastNotifiedSystem', notif.id);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erreur vérification notifications:', error);
                 }
             }
 
@@ -881,8 +1011,14 @@
                             .select('*')
                             .eq('id', userId)
                             .single();
-                        if (data) this.currentUser = data;
+                        if (data) {
+                            this.currentUser = data;
+                            console.log('✅ Utilisateur chargé:', data.username, 'Points S:', data.points_s);
+                        } else {
+                            localStorage.removeItem('userId');
+                        }
                     } catch (error) {
+                        console.error('Erreur:', error);
                         localStorage.removeItem('userId');
                     }
                 }
@@ -1144,6 +1280,10 @@
                             <div class="nav-icon">🛒</div>
                             <div>Boutique</div>
                         </div>
+                        <div class="nav-item" data-section="classement">
+                            <div class="nav-icon">📊</div>
+                            <div>Classement</div>
+                        </div>
                         <div class="nav-item" data-section="badges">
                             <div class="nav-icon">🏆</div>
                             <div>Badges</div>
@@ -1192,6 +1332,7 @@
                         case 'quiz': await this.renderQuiz(); break;
                         case 'programme': await this.renderProgramme(); break;
                         case 'boutique': await this.renderBoutique(); break;
+                        case 'classement': await this.renderClassement(); break;
                         case 'badges': await this.renderBadges(); break;
                         case 'parametres': await this.renderParametres(); break;
                     }
@@ -1268,20 +1409,28 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                const { data } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('daily_chests')
                     .select('*')
                     .eq('user_id', this.currentUser.id)
                     .gte('opened_at', today.toISOString())
-                    .single();
+                    .maybeSingle();
 
+                console.log('Vérification coffre:', data ? 'Déjà ouvert' : 'Disponible');
                 return { data: !data };
             }
 
             async openDailyChest() {
+                // Double vérification avant ouverture
+                const { data: canOpen } = await this.canOpenDailyChest();
+                if (!canOpen) {
+                    this.showToast('Coffre déjà ouvert aujourd\'hui !', 'warning');
+                    return;
+                }
+
                 const reward = Math.floor(Math.random() * 50) + 10;
 
-                await supabaseClient
+                const { error } = await supabaseClient
                     .from('daily_chests')
                     .insert({
                         user_id: this.currentUser.id,
@@ -1289,22 +1438,62 @@
                         reward_points: reward
                     });
 
+                if (error) {
+                    console.error('Erreur coffre:', error);
+                    this.showToast('Erreur lors de l\'ouverture du coffre', 'danger');
+                    return;
+                }
+
                 await this.updatePoints(reward);
                 this.showToast(`🎉 Vous avez gagné ${reward} Points S !`, 'success');
-                this.showSection('accueil');
+                
+                // Recharger la page d'accueil pour masquer le coffre
+                await this.showSection('accueil');
             }
 
             async updatePoints(amount) {
                 const newPoints = (this.currentUser.points_s || 0) + amount;
                 
-                await supabaseClient
+                console.log(`💎 Mise à jour points: ${this.currentUser.points_s} → ${newPoints} (${amount > 0 ? '+' : ''}${amount})`);
+                
+                const { error } = await supabaseClient
                     .from('users')
                     .update({ points_s: newPoints })
                     .eq('id', this.currentUser.id);
 
+                if (error) {
+                    console.error('Erreur mise à jour points:', error);
+                    return;
+                }
+
+                // Mettre à jour localement
                 this.currentUser.points_s = newPoints;
+                
+                // Mettre à jour l'affichage
                 const pointsEl = document.getElementById('points-value');
-                if (pointsEl) pointsEl.textContent = newPoints;
+                if (pointsEl) {
+                    pointsEl.textContent = newPoints;
+                }
+
+                // Recharger les données utilisateur pour être sûr
+                await this.reloadUserData();
+            }
+
+            async reloadUserData() {
+                const { data } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('id', this.currentUser.id)
+                    .single();
+                
+                if (data) {
+                    this.currentUser = data;
+                    const pointsEl = document.getElementById('points-value');
+                    if (pointsEl) {
+                        pointsEl.textContent = data.points_s;
+                    }
+                    console.log('✅ Données utilisateur rechargées, Points S:', data.points_s);
+                }
             }
 
             async renderBoutique() {
@@ -1536,6 +1725,22 @@
                     image_url: image
                 });
 
+                // Notifier tous les utilisateurs du nouveau post
+                const { data: allUsers } = await supabaseClient
+                    .from('users')
+                    .select('id')
+                    .neq('id', this.currentUser.id);
+
+                if (allUsers && allUsers.length > 0) {
+                    const notifications = allUsers.map(user => ({
+                        user_id: user.id,
+                        type: 'info',
+                        content: `${this.currentUser.username} a publié : "${title}"`,
+                        read: false
+                    }));
+                    await supabaseClient.from('notifications').insert(notifications);
+                }
+
                 await this.updatePoints(5);
                 this.closeModal();
                 this.showToast('Post publié ! +5 Points S', 'success');
@@ -1607,11 +1812,19 @@
                     return;
                 }
 
-                await supabaseClient.from('messages').insert({
+                const { data: newMessage } = await supabaseClient.from('messages').insert({
                     sender_id: this.currentUser.id, 
                     receiver_id: receiverId, 
                     content, 
                     type: 'text'
+                }).select().single();
+
+                // Créer une notification pour le destinataire
+                await supabaseClient.from('notifications').insert({
+                    user_id: receiverId,
+                    type: 'info',
+                    content: `${this.currentUser.username} vous a envoyé un message : "${content.substring(0, 50)}..."`,
+                    read: false
                 });
 
                 await this.updatePoints(2);
@@ -2902,6 +3115,11 @@
                             <label class="form-label">Email</label>
                             <input type="email" class="form-input" id="settings-email" value="${this.currentUser.email}">
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Ma moyenne (sur 20)</label>
+                            <input type="number" class="form-input" id="settings-moyenne" min="0" max="20" step="0.01" value="${this.currentUser.moyenne || 0}" placeholder="Ex: 15.5">
+                            <small style="color:var(--text-secondary);">Cette moyenne apparaîtra dans le classement</small>
+                        </div>
                         <button class="btn btn-primary" style="width:100%;margin-bottom:1rem;" onclick="app.saveSettings()">Enregistrer</button>
                         <button class="btn btn-danger" style="width:100%;" onclick="app.logout()">Déconnexion</button>
                     </div>
@@ -2913,26 +3131,176 @@
                         <p><strong>Série:</strong> ${this.currentUser.streak_days || 0} jour(s)</p>
                         <p><strong>Membre depuis:</strong> ${new Date(this.currentUser.created_at).toLocaleDateString()}</p>
                     </div>
+
+                    <div class="card">
+                        <div class="card-title">Notifications Push 🔔</div>
+                        <div id="notification-status"></div>
+                        <button class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="app.testNotification()">Tester les notifications</button>
+                    </div>
                 `;
+
+                // Afficher le statut des notifications
+                this.updateNotificationStatus();
+            }
+
+            updateNotificationStatus() {
+                const statusDiv = document.getElementById('notification-status');
+                if (!statusDiv) return;
+
+                if (!('Notification' in window)) {
+                    statusDiv.innerHTML = `
+                        <p style="color:var(--danger);">❌ Notifications non supportées par votre navigateur</p>
+                    `;
+                } else if (Notification.permission === 'granted') {
+                    statusDiv.innerHTML = `
+                        <p style="color:var(--success);margin-bottom:0.5rem;">✅ Notifications activées</p>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">
+                            Vous recevez des notifications pour :<br>
+                            • Nouveaux messages<br>
+                            • Nouveaux posts<br>
+                            • Événements importants<br>
+                            <br>
+                            <strong>Note :</strong> Gardez l'application ouverte dans un onglet (même en arrière-plan) pour recevoir les notifications en temps réel.
+                        </p>
+                    `;
+                } else if (Notification.permission === 'denied') {
+                    statusDiv.innerHTML = `
+                        <p style="color:var(--danger);margin-bottom:0.5rem;">❌ Notifications bloquées</p>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;">
+                            Vous avez bloqué les notifications. Pour les activer :<br>
+                            1. Cliquez sur l'icône 🔒 dans la barre d'adresse<br>
+                            2. Cherchez "Notifications"<br>
+                            3. Sélectionnez "Autoriser"<br>
+                            4. Rechargez la page
+                        </p>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <p style="color:var(--warning);margin-bottom:0.5rem;">⚠️ Notifications désactivées</p>
+                        <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">
+                            Autorisez les notifications pour être averti en temps réel des nouveaux messages et événements.
+                        </p>
+                        <button class="btn btn-primary" style="width:100%;" onclick="app.requestNotificationPermission()">Activer les notifications</button>
+                    `;
+                }
+            }
+
+            async requestNotificationPermission() {
+                if (!('Notification' in window)) {
+                    this.showToast('Notifications non supportées', 'danger');
+                    return;
+                }
+
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    this.showToast('Notifications activées !', 'success');
+                    this.sendLocalNotification('ClassApp', 'Les notifications sont maintenant activées ! 🎉');
+                } else {
+                    this.showToast('Permission refusée', 'danger');
+                }
+
+                this.updateNotificationStatus();
+            }
+
+            testNotification() {
+                if (Notification.permission === 'granted') {
+                    this.sendLocalNotification(
+                        'Test ClassApp 🔔',
+                        'Ceci est une notification de test ! Si vous voyez ceci, les notifications fonctionnent parfaitement.',
+                        { tag: 'test' }
+                    );
+                    this.showToast('Notification de test envoyée !', 'success');
+                } else {
+                    this.showToast('Veuillez d\'abord activer les notifications', 'warning');
+                }
             }
 
             async saveSettings() {
                 const username = document.getElementById('settings-username').value.trim();
                 const email = document.getElementById('settings-email').value.trim();
+                const moyenne = parseFloat(document.getElementById('settings-moyenne').value) || 0;
 
                 if (!username || !email) {
                     this.showToast('Veuillez remplir tous les champs', 'danger');
                     return;
                 }
 
+                if (moyenne < 0 || moyenne > 20) {
+                    this.showToast('La moyenne doit être entre 0 et 20', 'danger');
+                    return;
+                }
+
                 await supabaseClient
                     .from('users')
-                    .update({ username, email })
+                    .update({ username, email, moyenne })
                     .eq('id', this.currentUser.id);
 
                 this.currentUser.username = username;
                 this.currentUser.email = email;
+                this.currentUser.moyenne = moyenne;
                 this.showToast('Paramètres enregistrés !', 'success');
+            }
+
+            async renderClassement() {
+                const { data: usersByStreak } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('streak_days', { ascending: false })
+                    .limit(10);
+
+                const { data: usersByMoyenne } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .order('moyenne', { ascending: false })
+                    .limit(10);
+
+                document.getElementById('content').innerHTML = `
+                    <div class="card">
+                        <div class="card-title">Classement par Série 🔥</div>
+                        ${usersByStreak && usersByStreak.length > 0 ? `
+                            <div class="message-list">
+                                ${usersByStreak.map((user, index) => `
+                                    <div class="message-item">
+                                        <div style="font-size:1.5rem;font-weight:700;width:40px;text-align:center;color:${index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--text-secondary)'}">${index + 1}</div>
+                                        <div class="avatar">${user.username[0].toUpperCase()}</div>
+                                        <div class="message-content">
+                                            <div class="message-header">
+                                                <span class="message-name">${user.username}${user.id === this.currentUser.id ? ' (Vous)' : ''}</span>
+                                                <span class="message-time" style="font-size:1.2rem;">🔥 ${user.streak_days || 0}</span>
+                                            </div>
+                                            <div class="message-preview">${user.streak_days || 0} jour${user.streak_days > 1 ? 's' : ''} d'affilée</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p style="color:var(--text-secondary);">Aucun classement pour le moment</p>'}
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Classement par Moyenne 📚</div>
+                        <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:0.9rem;">
+                            💡 Entrez votre moyenne dans les paramètres pour apparaître ici
+                        </p>
+                        ${usersByMoyenne && usersByMoyenne.filter(u => u.moyenne > 0).length > 0 ? `
+                            <div class="message-list">
+                                ${usersByMoyenne.filter(u => u.moyenne > 0).map((user, index) => `
+                                    <div class="message-item">
+                                        <div style="font-size:1.5rem;font-weight:700;width:40px;text-align:center;color:${index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--text-secondary)'}">${index + 1}</div>
+                                        <div class="avatar">${user.username[0].toUpperCase()}</div>
+                                        <div class="message-content">
+                                            <div class="message-header">
+                                                <span class="message-name">${user.username}${user.id === this.currentUser.id ? ' (Vous)' : ''}</span>
+                                                <span class="message-time" style="font-size:1.2rem;color:${user.moyenne >= 16 ? 'var(--success)' : user.moyenne >= 12 ? 'var(--warning)' : 'var(--danger)'}">📚 ${user.moyenne.toFixed(2)}/20</span>
+                                            </div>
+                                            <div class="message-preview">Moyenne générale</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p style="color:var(--text-secondary);">Aucune moyenne renseignée pour le moment</p>'}
+                    </div>
+                `;
             }
 
             async showNotifications() {
@@ -3013,15 +3381,58 @@
         window.addEventListener('DOMContentLoaded', initApp);
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
-                    self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl);
+            window.addEventListener('load', async () => {
+                try {
+                    // Service Worker amélioré pour les notifications
+                    const swCode = `
+                        self.addEventListener('install', (e) => {
+                            console.log('Service Worker installé');
+                            e.waitUntil(self.skipWaiting());
+                        });
+
+                        self.addEventListener('activate', (e) => {
+                            console.log('Service Worker activé');
+                            e.waitUntil(self.clients.claim());
+                        });
+
+                        self.addEventListener('fetch', (e) => {
+                            e.respondWith(fetch(e.request));
+                        });
+
+                        self.addEventListener('notificationclick', (event) => {
+                            console.log('Notification cliquée');
+                            event.notification.close();
+                            
+                            event.waitUntil(
+                                clients.openWindow('/')
+                            );
+                        });
+
+                        self.addEventListener('push', (event) => {
+                            console.log('Push reçu');
+                            const data = event.data ? event.data.json() : {};
+                            
+                            const options = {
+                                body: data.body || 'Nouvelle notification',
+                                icon: data.icon || '/icon.png',
+                                badge: '/icon.png',
+                                vibrate: [200, 100, 200],
+                                data: data.data || {}
+                            };
+
+                            event.waitUntil(
+                                self.registration.showNotification(data.title || 'ClassApp', options)
+                            );
+                        });
+                    `;
+                    
+                    const blob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+                    const registration = await navigator.serviceWorker.register(swUrl);
+                    console.log('✅ Service Worker enregistré');
+                } catch (error) {
+                    console.error('❌ Erreur Service Worker:', error);
+                }
             });
         }
     </script>
